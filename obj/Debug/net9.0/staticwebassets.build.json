@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "aXUfnqtr3YxNZ5R/yS2pdfsguq93yz5AHcW9+BRubjQ=",
+  "Source": "EmailMarketingService",
+  "BasePath": "_content/EmailMarketingService",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
