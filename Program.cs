@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Text;
 using System.Text.RegularExpressions;
 using ClosedXML.Excel;
+using EmailMarketingService;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +10,9 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using Newtonsoft.Json;
 
+
 ///
-/// Привет! Ниже реализация сервиса на ASP.NET Core (C#), который:
+/// реализация сервиса на ASP.NET Core (C#), который:
 /// - Принимает Excel-файл по POST-запросу.
 /// - Сохраняет файл на диск.
 /// - Считывает адреса email из первого столбца.

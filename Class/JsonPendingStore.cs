@@ -1,5 +1,9 @@
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+
+
 namespace EmailMarketingService
-{ 
+{
     public class JsonPendingStore : IPendingStore
     {
         private readonly StorageOptions _opt;
