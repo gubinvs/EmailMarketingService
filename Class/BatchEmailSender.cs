@@ -12,9 +12,7 @@ public class BatchEmailSender : BackgroundService
     private readonly IHttpClientFactory _http;
     private readonly SmtpOptions _smtp;
 
-    private const int BatchSize = 400;
-    private readonly TimeSpan DelayBetweenBatches = TimeSpan.FromHours(24);
-    private readonly TimeSpan DelayBetweenEmails = TimeSpan.FromSeconds(2);
+    private readonly TimeSpan DelayBetweenEmails = TimeSpan.FromSeconds(80); // задержка между письмами
     private readonly string _notifyUponFinish = "gubinvs@gmail.com";
 
     public BatchEmailSender(
@@ -37,65 +35,73 @@ public class BatchEmailSender : BackgroundService
     {
         _log.LogInformation("BatchEmailSender started");
 
-        try
+        while (!stoppingToken.IsCancellationRequested)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                try
+                var state = await _store.LoadAsync(stoppingToken);
+                var pendingEmails = state.Pending.Where(p => !p.Sent).ToList();
+
+                if (!pendingEmails.Any())
                 {
-                    var state = await _store.LoadAsync(stoppingToken);
-                    var pendingEmails = state.Pending.Where(p => !p.Sent).ToList();
+                    _log.LogDebug("No pending emails, skipping iteration.");
+                    await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+                    continue;
+                }
 
-                    if (pendingEmails.Any())
+                // проверяем, не надо ли ждать из-за предыдущего лимита SMTP
+                if (state.NextRunUtc != null && state.NextRunUtc > DateTime.UtcNow)
+                {
+                    var wait = state.NextRunUtc.Value - DateTime.UtcNow;
+                    _log.LogInformation("Next attempt scheduled at {time}, waiting {seconds} sec", state.NextRunUtc, wait.TotalSeconds);
+                    await Task.Delay(TimeSpan.FromSeconds(Math.Min(wait.TotalSeconds, 60)), stoppingToken);
+                    continue;
+                }
+
+                _log.LogInformation("Pending emails to send: {count}", pendingEmails.Count);
+                var body = await LoadEmailBody();
+
+                foreach (var item in pendingEmails)
+                {
+                    try
                     {
-                        _log.LogInformation("Pending emails to send: {count}", pendingEmails.Count);
+                        await SendEmail(item.Email, body);
+                        item.Sent = true;
 
-                        foreach (var batch in pendingEmails.Chunk(BatchSize))
-                        {
-                            var body = await LoadEmailBody();
-
-                            foreach (var item in batch)
-                            {
-                                try
-                                {
-                                    await SendEmail(item.Email, body);
-                                    item.Sent = true;
-
-                                    // сохраняем сразу после успешной отправки
-                                    await _store.SaveAsync(state);
-                                }
-                                catch (Exception ex)
-                                {
-                                    _log.LogWarning(ex, "Failed to send email to {email}, will retry later", item.Email);
-                                }
-
-                                await Task.Delay(DelayBetweenEmails, stoppingToken);
-                            }
-                        }
-
-                        state.NextRunUtc = DateTime.UtcNow.Add(DelayBetweenBatches);
+                        await _store.SaveAsync(state); // сохраняем после успешной отправки
+                    }
+                    catch (SmtpException ex) when (ex.Message.Contains("Limit per hour"))
+                    {
+                        _log.LogWarning("SMTP limit reached. Next attempt will be in 1 hour. Details: {0}", ex.Message);
+                        state.NextRunUtc = DateTime.UtcNow.AddHours(1); // откладываем на 1 час
                         await _store.SaveAsync(state);
+                        break; // выходим из цикла отправки текущих писем
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        if (!string.IsNullOrEmpty(_notifyUponFinish))
-                        {
-                            _log.LogInformation("All emails sent. Sending notification to {email}", _notifyUponFinish);
-                            await SendNotification(_notifyUponFinish);
-                        }
+                        _log.LogWarning(ex, "Failed to send email to {email}, will retry later", item.Email);
                     }
-                }
-                catch (Exception ex) when (ex is not TaskCanceledException)
-                {
-                    _log.LogError(ex, "Error occurred in BatchEmailSender");
+
+                    await Task.Delay(DelayBetweenEmails, stoppingToken);
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+                // проверяем, остались ли письма со Sent = false
+                if (!state.Pending.Any(p => !p.Sent) && !state.NotificationSent)
+                {
+                    _log.LogInformation("All emails successfully sent. Sending notification to {email}", _notifyUponFinish);
+                    await SendNotification(_notifyUponFinish);
+
+                    state.NotificationSent = true;
+                    await _store.SaveAsync(state);
+                }
             }
-        }
-        catch (TaskCanceledException)
-        {
-            _log.LogInformation("BatchEmailSender stopped by cancellation token");
+            catch (Exception ex) when (ex is not TaskCanceledException)
+            {
+                _log.LogError(ex, "Error occurred in BatchEmailSender");
+            }
+
+            // обычная задержка между проверками очереди
+            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
         }
     }
 
@@ -106,7 +112,6 @@ public class BatchEmailSender : BackgroundService
 
     private async Task SendEmail(string email, string body)
     {
-        // Проверяем FromEmail
         if (string.IsNullOrWhiteSpace(_smtp.FromEmail))
             throw new InvalidOperationException("SMTP FromEmail address is not configured.");
 
@@ -171,4 +176,3 @@ public class BatchEmailSender : BackgroundService
         }
     }
 }
-
