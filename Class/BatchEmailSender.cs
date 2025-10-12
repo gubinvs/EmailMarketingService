@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using System.Net.Mail;
 
 namespace EmailMarketingService;
 
@@ -11,10 +12,10 @@ public class BatchEmailSender : BackgroundService
     private readonly IHttpClientFactory _http;
     private readonly SmtpOptions _smtp;
 
-    private const int BatchSize = 400; // писем в сутки
-    private readonly TimeSpan DelayBetweenBatches = TimeSpan.FromHours(24); // продолжение через 24 часа 
-    private readonly string _notifyUponFinish = "gubinvs@gmail.com"; // уведомление после каждой итерации
-    private readonly TimeSpan DelayBetweenEmails = TimeSpan.FromSeconds(3); // задержка между письмами
+    private const int BatchSize = 400;
+    private readonly TimeSpan DelayBetweenBatches = TimeSpan.FromHours(24);
+    private readonly TimeSpan DelayBetweenEmails = TimeSpan.FromSeconds(2);
+    private readonly string _notifyUponFinish = "gubinvs@gmail.com";
 
     public BatchEmailSender(
         ILogger<BatchEmailSender> log,
@@ -43,37 +44,40 @@ public class BatchEmailSender : BackgroundService
                 try
                 {
                     var state = await _store.LoadAsync(stoppingToken);
-
-                    // Получаем все Pending письма
                     var pendingEmails = state.Pending.Where(p => !p.Sent).ToList();
 
                     if (pendingEmails.Any())
                     {
                         _log.LogInformation("Pending emails to send: {count}", pendingEmails.Count);
 
-                        // Отправка батчами
                         foreach (var batch in pendingEmails.Chunk(BatchSize))
                         {
                             var body = await LoadEmailBody();
 
                             foreach (var item in batch)
                             {
-                                await SendEmail(item.Email, body, stoppingToken);
-                                item.Sent = true;
+                                try
+                                {
+                                    await SendEmail(item.Email, body);
+                                    item.Sent = true;
+
+                                    // сохраняем сразу после успешной отправки
+                                    await _store.SaveAsync(state);
+                                }
+                                catch (Exception ex)
+                                {
+                                    _log.LogWarning(ex, "Failed to send email to {email}, will retry later", item.Email);
+                                }
+
                                 await Task.Delay(DelayBetweenEmails, stoppingToken);
                             }
-
-                            // Сохраняем состояние после каждого батча
-                            await _store.SaveAsync(state);
                         }
 
-                        // Обновляем NextRunUtc после выполнения всех Pending
                         state.NextRunUtc = DateTime.UtcNow.Add(DelayBetweenBatches);
                         await _store.SaveAsync(state);
                     }
                     else
                     {
-                        // Все письма отправлены, отправляем уведомление
                         if (!string.IsNullOrEmpty(_notifyUponFinish))
                         {
                             _log.LogInformation("All emails sent. Sending notification to {email}", _notifyUponFinish);
@@ -100,17 +104,71 @@ public class BatchEmailSender : BackgroundService
         return await Task.FromResult("<html><body>Hello!</body></html>");
     }
 
-    private async Task SendEmail(string email, string body, CancellationToken stoppingToken)
+    private async Task SendEmail(string email, string body)
     {
-        _log.LogInformation("Sending email to {email}", email);
+        // Проверяем FromEmail
+        if (string.IsNullOrWhiteSpace(_smtp.FromEmail))
+            throw new InvalidOperationException("SMTP FromEmail address is not configured.");
 
-        // Здесь можно добавить реальную отправку через SMTP
-        await Task.Delay(50, stoppingToken); // имитация отправки
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            _log.LogWarning("Skipping empty recipient email");
+            return;
+        }
+
+        using var client = new SmtpClient(_smtp.Host, _smtp.Port)
+        {
+            Credentials = new System.Net.NetworkCredential(_smtp.User, _smtp.Password),
+            EnableSsl = _smtp.UseSsl
+        };
+
+        var fromAddress = new MailAddress(_smtp.FromEmail, _smtp.FromName);
+        var message = new MailMessage
+        {
+            From = fromAddress,
+            Subject = "Рассылка",
+            Body = body,
+            IsBodyHtml = true
+        };
+        message.To.Add(email);
+
+        await client.SendMailAsync(message);
+        _log.LogInformation("Email successfully sent to {email}", email);
     }
 
     private async Task SendNotification(string email)
     {
-        _log.LogInformation("Notification sent to {email}", email);
-        await Task.CompletedTask;
+        if (string.IsNullOrWhiteSpace(_smtp.FromEmail))
+        {
+            _log.LogWarning("Cannot send notification, FromEmail not configured");
+            return;
+        }
+
+        using var client = new SmtpClient(_smtp.Host, _smtp.Port)
+        {
+            Credentials = new System.Net.NetworkCredential(_smtp.User, _smtp.Password),
+            EnableSsl = _smtp.UseSsl
+        };
+
+        var fromAddress = new MailAddress(_smtp.FromEmail, _smtp.FromName);
+        var message = new MailMessage
+        {
+            From = fromAddress,
+            Subject = "Рассылка завершена",
+            Body = "Все письма были успешно отправлены.",
+            IsBodyHtml = false
+        };
+        message.To.Add(email);
+
+        try
+        {
+            await client.SendMailAsync(message);
+            _log.LogInformation("Notification sent to {email}", email);
+        }
+        catch (Exception ex)
+        {
+            _log.LogError(ex, "Failed to send notification to {email}", email);
+        }
     }
 }
+

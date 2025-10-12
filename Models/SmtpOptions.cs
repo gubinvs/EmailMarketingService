@@ -1,14 +1,16 @@
 
 namespace EmailMarketingService
 {
-    public record SmtpOptions
+    public class SmtpOptions
     {
-        public string Host { get; init; } = null!;
-        public int Port { get; init; }
-        public bool UseSsl { get; init; }
-        public string User { get; init; } = null!;
-        public string Password { get; init; } = null!;
-        public string FromName { get; init; } = null!;
-        public string FromEmail { get; init; } = null!;
+        public string Host { get; set; } = "";
+        public int Port { get; set; }
+        public string User { get; set; } = "";
+        public string Password { get; set; } = "";
+        public string FromName { get; set; } = "";
+        public string FromEmail { get; set; } = "";
+        public bool UseSsl { get; set; } = true;
     }
+
+
 }

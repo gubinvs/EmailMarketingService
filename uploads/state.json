@@ -2,12 +2,12 @@
   "Pending": [
     {
       "Email": "gubinvs@mail.ru",
-      "Sent": true
+      "Sent": false
     },
     {
       "Email": "2040043@mail.ru",
-      "Sent": true
+      "Sent": false
     }
   ],
-  "NextRunUtc": "2025-10-13T16:34:23.095868Z"
+  "NextRunUtc": null
 }
