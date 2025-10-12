@@ -105,6 +105,7 @@ public class BatchEmailSender : BackgroundService
         }
     }
 
+    // Тело письма
     private async Task<string> LoadEmailBody()
     {
         return await Task.FromResult("<html><body>Hello!</body></html>");
@@ -131,7 +132,7 @@ public class BatchEmailSender : BackgroundService
         var message = new MailMessage
         {
             From = fromAddress,
-            Subject = "Рассылка",
+            Subject = "Рассылка", // заголовок письма
             Body = body,
             IsBodyHtml = true
         };
