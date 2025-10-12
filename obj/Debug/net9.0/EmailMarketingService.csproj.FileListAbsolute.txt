@@ -7,7 +7,6 @@
 /Users/vladimirgubin/EmailMarketingService/obj/Debug/net9.0/EmailMarketingService.sourcelink.json
 /Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/appsettings.Development.json
 /Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/appsettings.json
-/Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/uploads/data/state.json
 /Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/EmailMarketingService.staticwebassets.endpoints.json
 /Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/EmailMarketingService
 /Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/EmailMarketingService.deps.json
@@ -47,3 +46,4 @@
 /Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll
 /Users/vladimirgubin/EmailMarketingService/obj/Debug/net9.0/EmailMarketingService.MvcApplicationPartsAssemblyInfo.cs
+/Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/data/state.json
