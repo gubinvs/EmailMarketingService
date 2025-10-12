@@ -46,4 +46,3 @@
 /Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll
 /Users/vladimirgubin/EmailMarketingService/obj/Debug/net9.0/EmailMarketingService.MvcApplicationPartsAssemblyInfo.cs
-/Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/data/state.json
