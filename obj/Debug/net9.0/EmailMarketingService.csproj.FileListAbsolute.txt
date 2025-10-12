@@ -1,0 +1,7 @@
+/Users/vladimirgubin/EmailMarketingService/obj/Debug/net9.0/EmailMarketingService.csproj.AssemblyReference.cache
+/Users/vladimirgubin/EmailMarketingService/obj/Debug/net9.0/EmailMarketingService.GeneratedMSBuildEditorConfig.editorconfig
+/Users/vladimirgubin/EmailMarketingService/obj/Debug/net9.0/EmailMarketingService.AssemblyInfoInputs.cache
+/Users/vladimirgubin/EmailMarketingService/obj/Debug/net9.0/EmailMarketingService.AssemblyInfo.cs
+/Users/vladimirgubin/EmailMarketingService/obj/Debug/net9.0/EmailMarketingService.csproj.CoreCompileInputs.cache
+/Users/vladimirgubin/EmailMarketingService/obj/Debug/net9.0/EmailMarketingService.MvcApplicationPartsAssemblyInfo.cache
+/Users/vladimirgubin/EmailMarketingService/obj/Debug/net9.0/EmailMarketingService.sourcelink.json
