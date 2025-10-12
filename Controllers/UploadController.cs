@@ -26,28 +26,53 @@ public class UploadController : ControllerBase
      /// Загружает Excel-файл с адресами email (первый столбец).
      /// </summary>
      [HttpPost("upload-excel")]
-     [Consumes("multipart/form-data")] // обязательно
+     [Consumes("multipart/form-data")]
      [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
      [ProducesResponseType(StatusCodes.Status400BadRequest)]
      public async Task<IActionResult> UploadExcel([FromForm] UploadExcelRequest request)
      {
           var file = request.File;
-
           if (file == null || file.Length == 0)
                return BadRequest("Файл не передан.");
 
           var safeName = Path.GetRandomFileName() + ".xlsx";
           var path = Path.Combine(_storage.UploadFolder, safeName);
 
-          await using (var fs = System.IO.File.Create(path))
-               await file.CopyToAsync(fs);
+          try
+          {
+               // 1️⃣ Сохраняем файл на диск
+               await using (var fs = System.IO.File.Create(path))
+                    await file.CopyToAsync(fs);
 
-          var emails = ExtractEmailsFromExcel(path);
-          if (!emails.Any())
-               return BadRequest("Не найдено email-адресов в первом столбце.");
+               // 2️⃣ Извлекаем адреса email
+               var emails = ExtractEmailsFromExcel(path);
+               if (!emails.Any())
+                    return BadRequest("Не найдено email-адресов в первом столбце.");
 
-          await _queue.EnqueueMany(emails);
-          return Ok(new { count = emails.Count(), path });
+               // 3️⃣ Добавляем в очередь рассылки
+               await _queue.EnqueueMany(emails);
+
+               // 4️⃣ Возвращаем результат
+               return Ok(new { count = emails.Count(), message = "Файл обработан и удалён" });
+          }
+          catch (Exception ex)
+          {
+               _log.LogError(ex, "Ошибка при обработке Excel-файла");
+               return StatusCode(500, "Ошибка при обработке файла");
+          }
+          finally
+          {
+               // 5️⃣ Удаляем файл независимо от результата
+               try
+               {
+                    if (System.IO.File.Exists(path))
+                         System.IO.File.Delete(path);
+               }
+               catch (Exception cleanupEx)
+               {
+                    _log.LogWarning(cleanupEx, "Не удалось удалить временный файл {Path}", path);
+               }
+          }
      }
 
      private IEnumerable<string> ExtractEmailsFromExcel(string path)
