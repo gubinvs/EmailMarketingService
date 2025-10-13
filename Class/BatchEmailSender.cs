@@ -123,7 +123,7 @@ public class BatchEmailSender : BackgroundService
     private async Task<string> LoadEmailTitle()
     {
         string url = "https://encomponent.ru/email-body.html";
-        string title = await ExtractTitleFromHtmlAsync(url); // ✅ теперь это async-метод
+        string title = await ExtractTitleFromHtmlAsync(url);
         return title;
     }
 

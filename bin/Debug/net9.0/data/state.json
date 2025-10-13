@@ -2,9 +2,9 @@
   "Pending": [
     {
       "Email": "man@handyautomation.ru",
-      "Sent": false
+      "Sent": true
     }
   ],
   "NextRunUtc": null,
-  "NotificationSent": false
+  "NotificationSent": true
 }

@@ -36,6 +36,24 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// --- CORS ---
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+        policy.AllowAnyHeader()
+              .AllowAnyMethod()
+              .SetIsOriginAllowed(_ => true));
+});
+
+// --- CORS ---
+// builder.Services.AddCors(options =>
+// {
+//     options.AddPolicy("AllowOnlySupply", policy =>
+//         policy.WithOrigins("https://supply.encomponent.ru") // Только этот источник
+//               .AllowAnyHeader()
+//               .AllowAnyMethod());
+// });
+
 var app = builder.Build();
 
 // ✅ Включаем Swagger UI (в Dev-режиме)
@@ -51,5 +69,8 @@ if (app.Environment.IsDevelopment())
 
 // Маршрутизация контроллеров
 app.MapControllers();
+
+app.UseCors("AllowAll"); // Если все кому не лень запрашивают
+// app.UseCors("AllowOnlySupply"); // только конкретному сайту
 
 app.Run();
