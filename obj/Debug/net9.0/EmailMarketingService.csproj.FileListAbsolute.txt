@@ -96,5 +96,4 @@
 /home/gubinvs/EmailMarketingService/obj/Debug/net9.0/ref/EmailMarketingService.dll
 /home/gubinvs/EmailMarketingService/bin/Debug/net9.0/HtmlAgilityPack.dll
 /home/gubinvs/EmailMarketingService/bin/Debug/net9.0/data/state.json
-/Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/data/state.json
 /Users/vladimirgubin/EmailMarketingService/bin/Debug/net9.0/HtmlAgilityPack.dll

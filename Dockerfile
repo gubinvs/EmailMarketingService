@@ -21,4 +21,8 @@ RUN dotnet publish "EmailMarketingService.csproj" -c $configuration -o /app/publ
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+RUN mkdir -p /app/data && chown -R appuser:appuser /app/data
+USER appuser
+
 ENTRYPOINT ["dotnet", "EmailMarketingService.dll"]
