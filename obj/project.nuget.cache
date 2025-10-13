@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "0kFcTTVcxW0=",
+  "dgSpecHash": "HOjDl1ouwk0=",
   "success": true,
   "projectFilePath": "/home/gubinvs/EmailMarketingService/EmailMarketingService.csproj",
   "expectedPackageFiles": [
@@ -10,6 +10,7 @@
     "/home/gubinvs/.nuget/packages/documentformat.openxml/3.0.1/documentformat.openxml.3.0.1.nupkg.sha512",
     "/home/gubinvs/.nuget/packages/documentformat.openxml.framework/3.0.1/documentformat.openxml.framework.3.0.1.nupkg.sha512",
     "/home/gubinvs/.nuget/packages/excelnumberformat/1.1.0/excelnumberformat.1.1.0.nupkg.sha512",
+    "/home/gubinvs/.nuget/packages/htmlagilitypack/1.11.45/htmlagilitypack.1.11.45.nupkg.sha512",
     "/home/gubinvs/.nuget/packages/mailkit/4.4.0/mailkit.4.4.0.nupkg.sha512",
     "/home/gubinvs/.nuget/packages/microsoft.extensions.apidescription.server/9.0.0/microsoft.extensions.apidescription.server.9.0.0.nupkg.sha512",
     "/home/gubinvs/.nuget/packages/microsoft.openapi/1.6.25/microsoft.openapi.1.6.25.nupkg.sha512",

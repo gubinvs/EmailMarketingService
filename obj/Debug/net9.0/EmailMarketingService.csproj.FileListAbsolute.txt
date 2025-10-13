@@ -94,3 +94,5 @@
 /home/gubinvs/EmailMarketingService/obj/Debug/net9.0/EmailMarketingService.pdb
 /home/gubinvs/EmailMarketingService/obj/Debug/net9.0/EmailMarketingService.genruntimeconfig.cache
 /home/gubinvs/EmailMarketingService/obj/Debug/net9.0/ref/EmailMarketingService.dll
+/home/gubinvs/EmailMarketingService/bin/Debug/net9.0/HtmlAgilityPack.dll
+/home/gubinvs/EmailMarketingService/bin/Debug/net9.0/data/state.json

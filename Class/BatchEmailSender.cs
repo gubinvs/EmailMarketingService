@@ -1,5 +1,8 @@
 using Microsoft.Extensions.Options;
 using System.Net.Mail;
+using HtmlAgilityPack;
+using DocumentFormat.OpenXml.Drawing;
+
 
 namespace EmailMarketingService;
 
@@ -108,8 +111,61 @@ public class BatchEmailSender : BackgroundService
     // Тело письма
     private async Task<string> LoadEmailBody()
     {
-        return await Task.FromResult("<html><body>Hello!</body></html>");
+        string url = "https://encomponent.ru/email-body.html";
+        string body = await GetHtmlBodyAsync(url);
+
+        return body;
+        // return await Task.FromResult("<html><body>Hello!</body></html>");
     }
+
+    
+   // Заголовок письма
+    private async Task<string> LoadEmailTitle()
+    {
+        string url = "https://encomponent.ru/email-body.html";
+        string title = await ExtractTitleFromHtmlAsync(url); // ✅ теперь это async-метод
+        return title;
+    }
+
+
+    // метод извлечения <title> из HTML по URL
+    private async Task<string> ExtractTitleFromHtmlAsync(string url)
+    {
+        using var client = _http.CreateClient(); // Используем IHttpClientFactory (из DI)
+        try
+        {
+            var html = await client.GetStringAsync(url);
+
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+
+            var titleNode = doc.DocumentNode.SelectSingleNode("//title");
+            return titleNode?.InnerText?.Trim() ?? "Нет тега <title>";
+        }
+        catch (Exception ex)
+        {
+            _log.LogWarning(ex, "Ошибка при получении или разборе HTML для извлечения <title>");
+            return "Ошибка при загрузке заголовка";
+        }
+    }
+
+
+    static async Task<string> GetHtmlBodyAsync(string url)
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            try
+            {
+                return await client.GetStringAsync(url);
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine($"Ошибка запроса: {e.Message}");
+                return "";
+            }
+        }
+    }
+
 
     private async Task SendEmail(string email, string body)
     {
@@ -132,7 +188,7 @@ public class BatchEmailSender : BackgroundService
         var message = new MailMessage
         {
             From = fromAddress,
-            Subject = "Рассылка", // заголовок письма
+            Subject = await LoadEmailTitle(), // заголовок письма
             Body = body,
             IsBodyHtml = true
         };
