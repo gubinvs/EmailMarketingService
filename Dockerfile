@@ -5,6 +5,7 @@ EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 
 USER app
+
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG configuration=Release
 WORKDIR /src
@@ -22,7 +23,11 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
-RUN mkdir -p /app/data && chown -R appuser:appuser /app/data
-USER appuser
+# Временно переключаемся на root, чтобы выдать права
+USER root
+RUN mkdir -p /app/data /app/uploads && chmod -R 777 /app/data /app/uploads
+
+# Возвращаем пользователя app
+USER app
 
 ENTRYPOINT ["dotnet", "EmailMarketingService.dll"]
