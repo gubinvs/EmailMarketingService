@@ -111,7 +111,8 @@ public class BatchEmailSender : BackgroundService
     // Тело письма
     private async Task<string> LoadEmailBody()
     {
-        string url = "https://encomponent.ru/email-body.html";
+        // string url = "https://encomponent.ru/email-body.html";
+        string url = "https://encomponent.ru/email-body_2.html";
         string body = await GetHtmlBodyAsync(url);
 
         return body;
@@ -122,7 +123,8 @@ public class BatchEmailSender : BackgroundService
    // Заголовок письма
     private async Task<string> LoadEmailTitle()
     {
-        string url = "https://encomponent.ru/email-body.html";
+        // string url = "https://encomponent.ru/email-body.html";
+        string url = "https://encomponent.ru/email-body_2.html";
         string title = await ExtractTitleFromHtmlAsync(url);
         return title;
     }
