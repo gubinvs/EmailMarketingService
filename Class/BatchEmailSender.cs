@@ -84,7 +84,7 @@ public class BatchEmailSender : BackgroundService
                     try
                     {
                         var remaining = state.Pending.Count(p => !p.Sent);
-                        var body = $"<p>SMTP-лимит истёк, рассылка @gmail.com возобновлена.</p>" +
+                        var body = $"<p>SMTP-лимит истёк, рассылка @mail.ru возобновлена.</p>" +
                                    $"<p>Время: {DateTime.Now:dd.MM.yyyy HH:mm:ss}</p>" +
                                    $"<p>Осталось писем для отправки: <b>{remaining}</b></p>";
 
@@ -136,7 +136,7 @@ public class BatchEmailSender : BackgroundService
                     var body = "<p>Все письма были успешно отправлены.</p>" +
                                $"<p>Время завершения: {DateTime.Now:dd.MM.yyyy HH:mm:ss}</p>";
 
-                    await SendNotification(_notifyUponFinish, "Рассылка @gmail.com завершена", body, html: true);
+                    await SendNotification(_notifyUponFinish, "Рассылка @mail.ru завершена", body, html: true);
                     state.NotificationSent = true;
                     await _store.SaveAsync(state);
                 }
@@ -160,15 +160,15 @@ public class BatchEmailSender : BackgroundService
 
     private async Task<string> LoadEmailBody()
     {
-        string url = "https://encomponent.ru/email-body.html";
-        //string url = "https://encomponent.ru/email-body_2.html";
+        //string url = "https://encomponent.ru/email-body.html";
+        string url = "https://encomponent.ru/email-body_2.html";
         return await GetHtmlBodyAsync(url);
     }
 
     private async Task<string> LoadEmailTitle()
     {
-        string url = "https://encomponent.ru/email-body.html";
-        //string url = "https://encomponent.ru/email-body_2.html";
+        //string url = "https://encomponent.ru/email-body.html";
+        string url = "https://encomponent.ru/email-body_2.html";
         return await ExtractTitleFromHtmlAsync(url);
     }
 
