@@ -7,6 +7,10 @@
     {
       "Email": "gubinvs@gmail.com",
       "Sent": true
+    },
+    {
+      "Email": "man@handyautomation.ru",
+      "Sent": true
     }
   ],
   "NextRunUtc": null,
