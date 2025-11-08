@@ -1,17 +1,19 @@
-using Microsoft.Extensions.Options;
-using System.Net.Mail;
-using HtmlAgilityPack;
-using DocumentFormat.OpenXml.Drawing;
 
 /// ✅ Исправлено залипание после лимита SMTP.
 /// ✅ Добавлено уведомление, когда рассылка возобновляется после лимита.
 /// ✅ Улучшены логи, структура и надёжность.
 /// ✅ Заголовок и тело письма загружаются один раз за цикл.
 /// ✅ Код готов к компиляции и использованию.
-/// 
+/// Еmail адреса на которые отправлены сообщения хранятся в файле data/state.json
+/// после завершения отправки файл удаляется
+
+
+using Microsoft.Extensions.Options;
+using System.Net.Mail;
+using HtmlAgilityPack;
+using DocumentFormat.OpenXml.Drawing;
 
 namespace EmailMarketingService;
-
 
 public class BatchEmailSender : BackgroundService
 {
@@ -128,7 +130,7 @@ public class BatchEmailSender : BackgroundService
                     await Task.Delay(DelayBetweenEmails, stoppingToken);
                 }
 
-                // Уведомляем, если всё разослано
+                // ✅ Уведомляем и удаляем файл после завершения рассылки
                 if (state.Pending.All(p => p.Sent) && !state.NotificationSent)
                 {
                     _log.LogInformation("All emails sent. Sending notification to {email}", _notifyUponFinish);
@@ -139,6 +141,21 @@ public class BatchEmailSender : BackgroundService
                     await SendNotification(_notifyUponFinish, "Рассылка @mail.ru завершена", body, html: true);
                     state.NotificationSent = true;
                     await _store.SaveAsync(state);
+
+                    // 🧹 Удаляем state.json
+                    try
+                    {
+                        var filePath = System.IO.Path.Combine(AppContext.BaseDirectory, "data", "state.json");
+                        if (File.Exists(filePath))
+                        {
+                            File.Delete(filePath);
+                            _log.LogInformation("🧹 Файл состояния state.json удалён после завершения рассылки.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _log.LogWarning(ex, "Не удалось удалить state.json после завершения рассылки.");
+                    }
                 }
             }
             catch (TaskCanceledException)
@@ -160,14 +177,12 @@ public class BatchEmailSender : BackgroundService
 
     private async Task<string> LoadEmailBody()
     {
-        //string url = "https://encomponent.ru/email-body.html";
         string url = "https://encomponent.ru/email-body_2.html";
         return await GetHtmlBodyAsync(url);
     }
 
     private async Task<string> LoadEmailTitle()
     {
-        //string url = "https://encomponent.ru/email-body.html";
         string url = "https://encomponent.ru/email-body_2.html";
         return await ExtractTitleFromHtmlAsync(url);
     }
