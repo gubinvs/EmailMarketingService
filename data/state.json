@@ -1,0 +1,30 @@
+{
+  "Pending": [
+    {
+      "Email": "man@handyautomation.ru",
+      "Sent": true
+    },
+    {
+      "Email": "m9r778dl@spamtest.smtp.bz",
+      "Sent": true
+    },
+    {
+      "Email": "gubinvs@gmail.com",
+      "Sent": true
+    },
+    {
+      "Email": "016a2mmw@spamtest.smtp.bz",
+      "Sent": true
+    },
+    {
+      "Email": "nnh79ya5@spamtest.smtp.bz",
+      "Sent": true
+    },
+    {
+      "Email": "rqmmh41j@spamtest.smtp.bz",
+      "Sent": true
+    }
+  ],
+  "NextRunUtc": null,
+  "NotificationSent": true
+}

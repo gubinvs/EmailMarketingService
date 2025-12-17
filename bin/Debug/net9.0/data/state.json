@@ -1,6 +1,17 @@
 {
   "Pending": [
-    
+    {
+      "Email": "gubinvs@gmail.com",
+      "Sent": true
+    },
+    {
+      "Email": "man@handyautomation.ru",
+      "Sent": true
+    },
+    {
+      "Email": "m9r778dl@spamtest.smtp.bz",
+      "Sent": true
+    }
   ],
   "NextRunUtc": null,
   "NotificationSent": true
