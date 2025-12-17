@@ -1200,24 +1200,25 @@
     ]
   },
   "packageFolders": {
-    "/Users/vladimirgubin/.nuget/packages/": {}
+    "/home/gubinvs/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/vladimirgubin/EmailMarketingService/EmailMarketingService.csproj",
+      "projectUniqueName": "/home/gubinvs/EmailMarketingService/EmailMarketingService.csproj",
       "projectName": "EmailMarketingService",
-      "projectPath": "/Users/vladimirgubin/EmailMarketingService/EmailMarketingService.csproj",
-      "packagesPath": "/Users/vladimirgubin/.nuget/packages/",
-      "outputPath": "/Users/vladimirgubin/EmailMarketingService/obj/",
+      "projectPath": "/home/gubinvs/EmailMarketingService/EmailMarketingService.csproj",
+      "packagesPath": "/home/gubinvs/.nuget/packages/",
+      "outputPath": "/home/gubinvs/EmailMarketingService/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/Users/vladimirgubin/.nuget/NuGet/NuGet.Config"
+        "/home/gubinvs/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
       ],
       "sources": {
+        "/usr/lib/dotnet/library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -1282,7 +1283,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/9.0.106/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
