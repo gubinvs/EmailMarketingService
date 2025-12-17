@@ -23,6 +23,10 @@
     {
       "Email": "rqmmh41j@spamtest.smtp.bz",
       "Sent": true
+    },
+    {
+      "Email": "bo51dd0j@spamtest.smtp.bz",
+      "Sent": true
     }
   ],
   "NextRunUtc": null,
