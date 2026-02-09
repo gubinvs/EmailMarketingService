@@ -67,10 +67,13 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+// Важно до app.MapControllers(); иначе не применятся на боевом деплое, на локале будет работать
+app.UseCors("AllowAll"); // Если все кому не лень запрашивают
+// app.UseCors("AllowOnlySupply"); // только конкретному сайту
+
 // Маршрутизация контроллеров
 app.MapControllers();
 
-app.UseCors("AllowAll"); // Если все кому не лень запрашивают
-// app.UseCors("AllowOnlySupply"); // только конкретному сайту
+
 
 app.Run();
