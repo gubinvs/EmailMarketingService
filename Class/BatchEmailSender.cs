@@ -231,6 +231,9 @@ public class BatchEmailSender : BackgroundService
             return;
         }
 
+        // 🔹 Вставляем уникальную ссылку для отписки
+        string personalizedBody = body.Replace("{{EMAIL}}", Uri.EscapeDataString(email));
+
         using var client = new SmtpClient(_smtp.Host, _smtp.Port)
         {
             Credentials = new System.Net.NetworkCredential(_smtp.User, _smtp.Password),
@@ -242,7 +245,7 @@ public class BatchEmailSender : BackgroundService
         {
             From = fromAddress,
             Subject = title,
-            Body = body,
+            Body = personalizedBody,
             IsBodyHtml = true
         };
         message.To.Add(email);
